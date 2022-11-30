@@ -1,25 +1,27 @@
 # carbonita
-pdf generator for apex based on carbone
+pdf  generator for oracle apex #orclAPEX based on carbone, 
 
 Based on [Carbone](https://carbone.io)  , Carbonita use template to generate reports from queries or Interactive report in apex.
 The generated reports can be PDF, DOCX, or XLSX.
 
 ## Description
+carbonita generate pdf, docx, xlsx report whithin apex application 
 This application use nodejs server side rendering , which use libreoffice.
 
 ### installation 
 #### Requirements
+- Oracle APEX 
 - NodeJS
 - Libreoffice
 - Carbone on nodejs
 
 
 #### Steps
-#### 1. install node js 
-#### 2. install libreoffice on the nodejs server
-#### 1. install carbonita package on node js
-#### 4. install application on apex 
-#### 5. Allow access from apex to the nodejs server 
+##### 1. install node js 
+##### 2. install libreoffice on the nodejs server
+##### 3. install carbonita package on node js
+##### 4. install application on apex 
+##### 5. Allow access from apex to the nodejs server 
 
 ##  Knowns Issues
 ### PGA 
@@ -36,15 +38,15 @@ ORA-04036: PGA memory used by the instance exceeds PGA_AGGREGATE_LIMIT"
 - [ ] parameters
 - [x] delete template, base64, generated report after response 
 - [ ] template 0 from report/query
-- [ ] data from context IR
+- [ ] data from context IR 
 - [ ] Oauth / security to access
 - [ ] Service as REST
 - [ ] Log
 - [ ] check RTL template (charset problem)
 
 ## References & Credits
-- Carbone https://carbone.io
-- LibreOffice
+- [Carbone] https://carbone.io, 
+- [LibreOffice](https://www.libreoffice.org/)
 - [AmandaDocxPrinter](https://github.com/aldocano29/AmandaDocxPrinter)
 - [docxtemplater](https://github.com/open-xml-templating/docxtemplater).
 - [Creating a REST API with Node.js and Oracle Database](https://jsao.io/2018/03/creating-a-rest-api-with-node-js-and-oracle-database/)
