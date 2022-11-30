@@ -22,7 +22,7 @@ let myreport_def = new TheReport();
 
 const add = (function () {
     let counter = 0;
-    return function () { counter += 1; return 1; /*counter*/ }
+    return function () { counter += 1; return counter }
 
 })();
 
@@ -31,14 +31,14 @@ async function convert_base64(path, originalFilename) {
         //var newpath = path + "-f05-binary";
         const re = /(\.)(\S{1,})$/g;
         //var l_extention = originalFilename.match(re)[0].match(/\w+/g)[0].match(/\w+/g)[0];
-       /* var l_extention =originalFilename.match(re);
-        var l_extention2 =l_extention[0];
-        var l_extention3 =l_extention2.match(/\w+/g);
-        
-        console.log('extention'+  originalFilename );
-        console.log('extention should be'+  l_extention3[0]);*/
+        /* var l_extention =originalFilename.match(re);
+         var l_extention2 =l_extention[0];
+         var l_extention3 =l_extention2.match(/\w+/g);
+         
+         console.log('extention'+  originalFilename );
+         console.log('extention should be'+  l_extention3[0]);*/
 
-        var newpath = path + "-f05-binary" ;//+ '.' + 'txt' ; //l_extention;
+        var newpath = path + "-f05-binary";//+ '.' + 'txt' ; //l_extention;
 
         fs.readFile(path, 'utf8', function (err, data) {
             console.log(path);
@@ -95,27 +95,58 @@ async function myPromise01_parse(fields, files) {
     return new Promise(function (myResolve, myReject) {
 
         try {
-            async function report_update01(report,fields,files) {
-                return new Promise(function (myResolve,myReject){
+            async function report_update01(report, fields, files) {
+                return new Promise(function (myResolve, myReject) {
                     myreport_def.data_json = JSON.parse(fields.data_text);
                     myreport_def.report_name = fields.report_name || 'result';
                     myreport_def.report_type = fields.report_type || "txt";
                     myreport_def.mimetype = mime.get_mime(fields.report_type);
-                    if (1==1) {
+                    if (1 == 1) {
                         myResolve(report);
-                    }else {
+                    } else {
                         myReject(report);
                     }
 
                 });
             };
-            async function report_update02(report,fields,files) {
-                return new Promise(function (myResolve,myReject){
-                    
-                    
-                    if (1==1) {
+            async function report_update02(report, fields, files) {
+                return new Promise(function (myResolve, myReject) {
+                    var l_filename1 = 'file' + files.template_binary.originalFilename;
+                    convert_base64(files.template_binary.filepath, l_filename1).then(
+                        async function (data) {
+
+                            await new Promise(function (myResolve, myReject) {
+                                myreport_def.template_path = data;
+
+
+                                myreport_def.result_path = './result-' + add() + '.' + fields.report_type;
+
+                                fs.unlink(files.template_binary.filepath, function (err) {
+                                    if (err) {
+                                        console.error(err);
+                                        myReject(err);
+                                    } else {
+                                        console.log("success remove base 64 template ! " + files.template_binary.filepath);
+
+                                    }
+                                });
+                                if (1 == 1) {
+                                    myResolve(data);
+                                } else {
+                                    myReject(error);
+                                }
+                            });
+
+                            myResolve(myreport_def);
+                        },
+                        function (error) {
+                            myReject(error); // error converting from base64
+                        })
+
+
+                    if (1 == 1) {
                         myResolve(report);
-                    }else {
+                    } else {
                         myReject(report);
                     }
 
@@ -135,11 +166,12 @@ async function myPromise01_parse(fields, files) {
                     // console.log('in1'+fields.report_type);
                     // console.log('in2'+mime.get_mime(fields.report_type));
                     myreport_def.result_path = './result-' + add() + '.' + fields.report_type;
+
                     myResolve(myreport_def);
 
                 } else {// fields.req_encoding == 'base64'
-                    var l_filename1 = 'file'+   files.template_binary.originalFilename;
-                    convert_base64(files.template_binary.filepath, l_filename1 ).then(
+                    var l_filename1 = 'file' + files.template_binary.originalFilename;
+                    convert_base64(files.template_binary.filepath, l_filename1).then(
                         function (data) {
                             //  var l_path = 'file' + files.template_binary.originalFilename;
                             myreport_def.template_path = data;
@@ -167,13 +199,13 @@ async function myPromise01_parse(fields, files) {
                             myreport_def.result_path = './result-' + add() + '.' + fields.report_type;
                             myResolve(myreport_def);
                         },
-                        function (error) { 
-                            console.log('error-parse' + error) ;
+                        function (error) {
+                            console.log('error-parse' + error);
                             // console.log('error-path' + path) ;
                             // console.log('error-newpath' + newpath) ;
                             myReject(error);
 
-                    })
+                        })
 
                 }
 
@@ -209,7 +241,7 @@ async function myPromise02_render(report) {
                 console.log('inside-render1');
 
                 fs.unlink(myreport_def.template_path, function (err) {
-                    if (err) {} else  {
+                    if (err) { } else {
                         console.log("success remove template  " + myreport_def.template_path);
                     }
                 });
