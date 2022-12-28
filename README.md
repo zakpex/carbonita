@@ -24,10 +24,12 @@ This application use nodejs server side rendering , which use libreoffice.
 ##### 5. Allow access from apex to the nodejs server 
 
 ##  Knowns Issues
-### PGA 
+#### PGA 
 "Incident 134859 created, dump file: /opt/oracle/diag/rdbms/xe/XE/incident/incdir_134859/XE_ora_4487_i134859.trc
 ORA-04036: PGA memory used by the instance exceeds PGA_AGGREGATE_LIMIT"
-
+#### bidirectionnal loop 
+- Two dimensional loop (pivot unknow number of rows may not show correctly)
+- headers in bidirectionnal table may not show correcly.
 
 ## TODO
 - [ ] https

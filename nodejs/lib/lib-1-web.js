@@ -64,16 +64,17 @@ async function c_post(req, res, next) {
 
                             });
                         };
-                     
+
                         send_report().then(function (data) {
                             if (1 == 1) {
                                 fs.unlink(data, function (err) {
                                     if (err) {
                                         console.error(err);
                                         //throw err;
-
+                                        res.writeHead(404, { 'Content-Type': 'application/json', 'Content-Disposition': 'attachment; filename="error.json"' });
+                                        res.end(err); 
                                     } else {
-                                        console.log("success remove! " + data);
+                                        console.log("success remove result web! " + data);
 
                                     }
                                 });
@@ -83,8 +84,8 @@ async function c_post(req, res, next) {
 
                     },
                         function (error) {
-                            res.writeHead(200, { 'Content-Type': 'application/json' , 'Content-Disposition': 'attachment; filename="error.json"'});
-                            res.end(error);
+                            res.writeHead(500, { 'Content-Type': 'application/json', 'Content-Disposition': 'attachment; filename="error.json"' });
+                            res.end(error); // TODO : not always accurate 
                         })
                     .then(function (data) {
                         // destroy template 

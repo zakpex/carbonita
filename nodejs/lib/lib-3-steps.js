@@ -12,7 +12,7 @@ class TheReport {
         this.report_name = name;
         this.report_type = type;
         this.mimetype = mimetype;
-        this.result_path = './result0.txt';
+        this.result_path = './result0' +'.txt';
         this.result_bin = new Uint8Array(Buffer.from('empty'));
     }
 
@@ -38,11 +38,12 @@ async function convert_base64(path, originalFilename) {
          console.log('extention'+  originalFilename );
          console.log('extention should be'+  l_extention3[0]);*/
 
-        var newpath = path + "-f05-binary";//+ '.' + 'txt' ; //l_extention;
+        var newpath = path +'-n-'+ "-f05-binary" ;//+ '.' + 'txt' ; //l_extention;
 
         fs.readFile(path, 'utf8', function (err, data) {
             console.log(path);
             console.log(newpath);
+            console.log(originalFilename);
             var bin = Base64.atob(data);
 
 
@@ -61,7 +62,7 @@ async function convert_base64(path, originalFilename) {
                             //--if (err) throw err;
                         } else {
                             console.log("success rename! " + newpath);
-                            myResolve(newpath);
+                            myResolve(writepath);
                         }
                     });
                 }
@@ -92,60 +93,75 @@ async function test(path) {
 
 }
 async function myPromise01_parse(fields, files) {
-    return new Promise(function (myResolve, myReject) {
+    return new Promise(function (myResolve0, myReject0) {
 
         try {
             async function report_update01(report, fields, files) {
                 return new Promise(function (myResolve, myReject) {
-                    myreport_def.data_json = JSON.parse(fields.data_text);
-                    myreport_def.report_name = fields.report_name || 'result';
-                    myreport_def.report_type = fields.report_type || "txt";
-                    myreport_def.mimetype = mime.get_mime(fields.report_type);
-                    if (1 == 1) {
-                        myResolve(report);
-                    } else {
-                        myReject(report);
+                    try {
+                        report.data_json = JSON.parse(fields.data_text);
+                        report.report_name = fields.report_name || 'result';
+                        report.report_type = fields.report_type || "txt";
+                        console.log('pasing type'+ fields.report_type );
+                        report.mimetype = mime.get_mime(fields.report_type);
+                        myResolve(myreport_def);
+
+                    } catch (error) {
+                        myReject(error)
                     }
+
+
 
                 });
             };
             async function report_update02(report, fields, files) {
                 return new Promise(function (myResolve, myReject) {
-                    var l_filename1 = 'file' + files.template_binary.originalFilename;
-                    convert_base64(files.template_binary.filepath, l_filename1).then(
-                        async function (data) {
+                    if (fields.req_encoding == 'binary') {
+                        
+                        report.result_path = './result-' + add() + '.' + fields.report_type;
+                        report.template_path = files.template_binary.filepath;
+                        myResolve(report);
+                    } else { // base64
+                        // var l_filename1 = 'file walou' + files.template_binary.originalFilename;
+                        convert_base64(files.template_binary.filepath)
+                            .then(
+                                function (data_new_path) {
+                                    // new Promise(function (myResolve, myReject) {
+                                    report.template_path = data_new_path;
+                                    report.result_path = './result-' + add() + '.' + fields.report_type;
 
-                            await new Promise(function (myResolve, myReject) {
-                                myreport_def.template_path = data;
+                                    
+                                    // remove  the old base64 template 
+                                    fs.unlink(files.template_binary.filepath, function (err) {
+                                        if (err) {
+                                            console.error(err);
+                                            console.error("err remove  after convert base64 ");
+                                            myReject(err);
+                                        } else {
+                                            console.log("success remove base 64 template ! " + files.template_binary.filepath);
+                                            myResolve(report); // return after remove ?
+                                        }
+                                    });
+                                    if (1 == 1) {
 
-
-                                myreport_def.result_path = './result-' + add() + '.' + fields.report_type;
-
-                                fs.unlink(files.template_binary.filepath, function (err) {
-                                    if (err) {
-                                        console.error(err);
-                                        myReject(err);
                                     } else {
-                                        console.log("success remove base 64 template ! " + files.template_binary.filepath);
-
+                                        myReject(error);
                                     }
-                                });
-                                if (1 == 1) {
-                                    myResolve(data);
-                                } else {
-                                    myReject(error);
-                                }
-                            });
+                                    //  });
+                                    //myResolve(myreport_def);
+                                },
+                                function (error) {
+                                    console.log('ERROR convert_base64');
+                                    myReject(error); // error converting from base64
 
-                            myResolve(myreport_def);
-                        },
-                        function (error) {
-                            myReject(error); // error converting from base64
-                        })
+                                }
+                            );
+                    }
+
 
 
                     if (1 == 1) {
-                        myResolve(report);
+
                     } else {
                         myReject(report);
                     }
@@ -153,69 +169,38 @@ async function myPromise01_parse(fields, files) {
                 });
             };
             const re = /(\.)(\S{1,})$/g;
-            if (1 == 1) {
-                if (fields.req_encoding == 'binary') {
-
-                    myreport_def.template_path = files.template_binary.filepath;
+            if (1 == 2) {
+         // old parse 
 
 
-                    myreport_def.data_json = JSON.parse(fields.data_text);
-                    myreport_def.report_name = fields.report_name || 'result';
-                    myreport_def.report_type = fields.report_type || "txt";
-                    myreport_def.mimetype = mime.get_mime(fields.report_type);
-                    // console.log('in1'+fields.report_type);
-                    // console.log('in2'+mime.get_mime(fields.report_type));
-                    myreport_def.result_path = './result-' + add() + '.' + fields.report_type;
-
-                    myResolve(myreport_def);
-
-                } else {// fields.req_encoding == 'base64'
-                    var l_filename1 = 'file' + files.template_binary.originalFilename;
-                    convert_base64(files.template_binary.filepath, l_filename1).then(
+            } else { // test 02
+                report_update01(myreport_def, fields, files)
+                    .then(
                         function (data) {
-                            //  var l_path = 'file' + files.template_binary.originalFilename;
-                            myreport_def.template_path = data;
-                            // destroy old base64 template 
-                            fs.unlink(files.template_binary.filepath, function (err) {
-                                if (err) {
-                                    console.error(err);
-                                    //throw err;
+                            console.log('--update01');
+                            console.log('--update parsing : '+fields.report_type);
+                            report_update02(myreport_def, fields, files)
+                                .then(
+                                    function (data) {
+                                        console.log('after update02');
+                                        // console.log(data);
+                                        myResolve0(data);
+                                    },
+                                    function (error) {
+                                        // console.log('after update02 -error-'); 
+                                        myReject0(error);
+                                    },
 
-                                } else {
-                                    console.log("success remove base 64 template ! " + files.template_binary.filepath);
+                                );
 
-                                }
-                            });
-
-                            //+ '.'
-                            // + l_path.match(re)[0].match(/\w+/g)[0].match(/\w+/g)[0];
-                            console.log('---' + data);
-                            myreport_def.data_json = JSON.parse(fields.data_text);
-                            myreport_def.report_name = fields.report_name || 'result';
-                            myreport_def.report_type = fields.report_type || "txt";
-                            myreport_def.mimetype = mime.get_mime(fields.report_type);
-                            // console.log('in1'+fields.report_type);
-                            // console.log('in2'+mime.get_mime(fields.report_type));
-                            myreport_def.result_path = './result-' + add() + '.' + fields.report_type;
-                            myResolve(myreport_def);
                         },
-                        function (error) {
-                            console.log('error-parse' + error);
-                            // console.log('error-path' + path) ;
-                            // console.log('error-newpath' + newpath) ;
-                            myReject(error);
-
-                        })
-
-                }
-
-
-
+                        function (error) { myReject0(error); }
+                    )
             }
 
             //  myResolve(myreport_def);
         } catch (error) {
-            myReject(error)
+            myReject0(error)
         }
         /*  if (1 === 1) {
               myResolve(report);
@@ -229,23 +214,26 @@ async function myPromise02_render(report) {
     return new Promise(function (myResolve, myReject) {
         //let report = new TheReport();
         var options = {
-            convertTo: myreport_def.report_type//can be docx, txt, ...
+            convertTo: report.report_type//can be docx, txt, ...
             //  convertTo: 'txt'
+             , hardRefresh: true
         };
-
-        carbone.render(myreport_def.template_path, myreport_def.data_json, options, (err, data) => {
+        console.log('inside render path p1' + report.template_path);
+        console.log('inside render path p2' + myreport_def.template_path);
+        console.log('Report_type '+report.report_type);
+        carbone.render(report.template_path, report.data_json, options, (err, data) => {
             if (err) {
                 myReject(err)
             } else {
-                myreport_def.result_bin = data;
+                report.result_bin = data;
                 console.log('inside-render1');
-
-                fs.unlink(myreport_def.template_path, function (err) {
+                                //myreport_def.result_bin
+                                                fs.unlink(report.template_path, function (err) {
                     if (err) { } else {
-                        console.log("success remove template  " + myreport_def.template_path);
+                        console.log("success remove template  " + report.template_path);
                     }
                 });
-                myResolve(myreport_def);
+                myResolve(report);
             };
         })
 
@@ -275,9 +263,10 @@ async function myPromise03_write(report) {
     });
 };
 class TheResult {
-    constructor(path, mimetype) {
+    constructor(path, mimetype,report_name) {
         this.path = path;
         this.mimetype = mimetype;
+        this.name = report_name;
     }
 }
 async function myPromise04_send(res, report) {
@@ -292,7 +281,7 @@ async function myPromise04_send(res, report) {
               readStream.pipe(res);
             */
 
-            var l_result = new TheResult(myreport_def.result_path, myreport_def.mimetype);
+            var l_result = new TheResult(myreport_def.result_path, myreport_def.mimetype,myreport_def.report_name);
             console.log('mim' + myreport_def.mimetype);
             if (1 == 2) {
                 res.setHeader('Content-Type', 'text/plain');
@@ -318,14 +307,16 @@ async function myPromise04_send(res, report) {
 async function myPromise04_destroy(report) {
     return new Promise(function (myResolve, myReject) {
         try {
-            if (1 == 2) {
+            if (1 == 2) { //Will destroyed elsewhere 
+                 
                 fs.unlink(path_to_destory, function (err) {
                     if (err) {
                         console.error(err);
                         //throw err;
-
+                        myReject(error)
                     } else {
-                        console.log("success remove! " + path_to_destory);
+                        console.log("success remove result ! " + path_to_destory);
+                      //  myResolve(report)
 
                     }
                 })
@@ -336,11 +327,13 @@ async function myPromise04_destroy(report) {
         }
         var x = 1;
         // var stat = fs.statSync(path);
-        if (1 === 1) {
+       
+       /* if (1 === 1) {
             myResolve(report);
         } else {
             myReject("-1-error parsing-");
         }
+        */
     });
 };
 

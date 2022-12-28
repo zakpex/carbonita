@@ -12,6 +12,7 @@ class TheResult {
 function log1(p) {
     console.log(p);
     console.log('error somewhere!');
+
 }
 
 
@@ -37,15 +38,17 @@ async function job(fields, files, response, next) {
                                                     console.log('-end-');
                                                     console.log('-----');
                                                     myResolve(l_result);
-                                                }, function (error) { console.log('error-4'); log1(error); }
+                                                }, function (error) { console.log('error-4'); log1(error); myReject(error); }
                                             )
-                                        }, function (error) { console.log('error-3'); log1(error); })
-                                }, function (error) { console.log('error-2'); log1(error); }
+                                        }, function (error) { console.log('error-3'); log1(error); myReject(error); })
+                                }, function (error) { console.log('error-2'); log1(error); myReject(error); }
                                 )
-                        }, function (error) { console.log('error-1'); log1(error); }
+                        }, function (error) { console.log('error-1'); log1(error); myReject(error); }
                         )
                 }
-                    , log1)
+                    ,
+                    function (error) { console.log('error-0'); log1(error); myReject(error); }
+                )
                 .then(function (data) {
 
                     console.log('- all jobs  initiated-')
