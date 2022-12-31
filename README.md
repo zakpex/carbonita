@@ -22,6 +22,9 @@ This application use nodejs server side rendering , which use libreoffice.
 ##### 3. install carbonita package on node js
 ##### 4. install application on apex 
 ##### 5. Allow access from apex to the nodejs server 
+firewall-cmd --permanent --zone=public --add-service=http  
+firewall-cmd --permanent --zone=public --add-service=https  
+firewall-cmd --reload 
 
 ##  Knowns Issues
 #### PGA 
